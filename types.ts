@@ -31,9 +31,23 @@ export enum ProjectStatus {
     PLANNING = "Planejamento",
     SCRIPTING = "Roteirizando",
     RECORDING = "Gravando",
+    IN_QUEUE = "Na Fila",
     EDITING = "Em Edição",
     COMPLETED = "Concluído",
     PUBLISHED = "Publicado",
+}
+
+export enum EditorStatus {
+  FREE = "Livre",
+  BUSY = "Gerando",
+}
+
+export interface Editor {
+  id: string;
+  name: string;
+  status: EditorStatus;
+  currentProjectId?: string;
+  queue: string[];
 }
 
 export interface ChannelSettings {
@@ -98,6 +112,7 @@ export interface Channel {
   settings: ChannelSettings;
   titles: VideoTitle[];
   projects: Project[];
+  editors: Editor[];
   lastPostDate?: string; // YYYY-MM-DD
 }
 
@@ -107,7 +122,7 @@ export type AppState = {
 
 export type Action =
   | { type: 'LOAD_STATE'; payload: AppState }
-  | { type: 'ADD_CHANNEL'; payload: Omit<Channel, 'id' | 'projects' | 'titles' | 'settings' | 'generalInfo' | 'usefulLinks' | 'lastPostDate'> }
+  | { type: 'ADD_CHANNEL'; payload: Omit<Channel, 'id' | 'projects' | 'titles' | 'settings' | 'generalInfo' | 'usefulLinks' | 'lastPostDate' | 'editors'> }
   | { type: 'UPDATE_CHANNEL'; payload: Channel }
   | { type: 'DELETE_CHANNEL'; payload: { channelId: string } }
   | { type: 'ADD_PROJECT'; payload: { channelId: string; projectName: string; titleId: string } }
@@ -117,6 +132,7 @@ export type Action =
   | { type: 'USE_TITLE_FOR_PROJECT'; payload: { channelId: string; titleId: string } }
   | { type: 'DELETE_TITLE'; payload: { channelId: string; titleId: string } }
   | { type: 'UPLOAD_FILE'; payload: { channelId: string; projectId: string; file: Omit<FileData, 'id'> } }
-  | { type: 'DELETE_FILE'; payload: { channelId: string; projectId: string; fileId: string } };
-
-   
+  | { type: 'DELETE_FILE'; payload: { channelId: string; projectId: string; fileId: string } }
+  | { type: 'ASSIGN_VIDEO_GENERATION'; payload: { channelId: string; projectId: string; editorId: string } }
+  | { type: 'STOP_VIDEO_GENERATION'; payload: { channelId: string; editorId: string } }
+  | { type: 'UPDATE_EDITOR_STATUS'; payload: { channelId: string; editorId: string; status: EditorStatus; currentProjectId?: string } };

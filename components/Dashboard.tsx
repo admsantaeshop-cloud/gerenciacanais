@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useAppContext } from '../context/AppContext';
 import { Channel, Language } from '../types';
 import Modal from './Modal';
-import { PlusIcon } from './icons';
+import { PlusIcon, FolderIcon, ChevronDownIcon, ChevronRightIcon } from './icons';
 
 interface DashboardProps {
   onSelectChannel: (channelId: string) => void;
@@ -25,23 +25,60 @@ const getStatus = (channel: Channel): { color: string; text: string, icon: strin
     return { color: 'bg-danger', text: 'Atrasado', icon: '🔴' };
 }
 
-const ChannelCard: React.FC<{ channel: Channel, onSelect: () => void }> = ({ channel, onSelect }) => {
+const ExpandableChannelRow: React.FC<{ channel: Channel, onSelectChannel: (channelId: string) => void }> = ({ channel, onSelectChannel }) => {
+    const [isExpanded, setIsExpanded] = useState(false);
     const status = getStatus(channel);
+
     return (
-        <div onClick={onSelect} className="bg-surface rounded-lg p-6 cursor-pointer hover:bg-secondary transition-all duration-200 shadow-lg border border-transparent hover:border-primary">
-            <div className="flex justify-between items-start">
-                <div>
-                    <h3 className="text-xl font-bold text-text-primary">{channel.name}</h3>
-                    <p className="text-sm text-text-secondary">{channel.niche}</p>
+        <div className="bg-surface rounded-lg shadow-lg">
+            <div 
+                className="flex items-center justify-between p-4 cursor-pointer hover:bg-secondary transition-all duration-200"
+                onClick={() => onSelectChannel(channel.id)}
+            >
+                <div className="flex items-center space-x-4 flex-grow min-w-0">
+                    <button 
+                        onClick={(e) => {
+                            e.stopPropagation(); // Prevent channel selection when clicking the toggle button
+                            setIsExpanded(!isExpanded);
+                        }}
+                        className="p-1 rounded-full hover:bg-border flex-shrink-0"
+                        aria-expanded={isExpanded}
+                        aria-label={isExpanded ? `Recolher projetos de ${channel.name}` : `Expandir projetos de ${channel.name}`}
+                    >
+                        {isExpanded ? <ChevronDownIcon className="w-5 h-5" /> : <ChevronRightIcon className="w-5 h-5" />}
+                    </button>
+                    <FolderIcon className="w-6 h-6 text-primary flex-shrink-0"/>
+                    <div className="min-w-0">
+                        <h3 className="text-xl font-bold text-text-primary truncate">{channel.name}</h3>
+                        <p className="text-sm text-text-secondary truncate">{channel.niche}</p>
+                    </div>
                 </div>
-                <div className="flex items-center space-x-2">
+                 <div className="flex items-center space-x-2 flex-shrink-0 ml-4">
                     <span className="text-2xl">{status.icon}</span>
                     <span className={`text-xs font-semibold px-2 py-1 rounded-full text-white ${status.color}`}>{status.text}</span>
                 </div>
             </div>
+            {isExpanded && (
+                <div className="pl-12 pr-4 pb-4 border-t border-border">
+                    {channel.projects.length > 0 ? (
+                        <div className="space-y-2 mt-4">
+                            <h4 className="text-sm font-semibold text-text-secondary mb-2">Projetos:</h4>
+                            {channel.projects.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(project => (
+                                <div key={project.id} className="flex items-center space-x-3 p-2 rounded-md hover:bg-secondary">
+                                    <FolderIcon className="w-5 h-5 text-text-secondary"/>
+                                    <span className="text-text-primary text-sm">{project.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="text-text-secondary text-sm italic mt-4">Nenhum projeto neste canal.</p>
+                    )}
+                </div>
+            )}
         </div>
     );
 };
+
 
 const NewChannelForm: React.FC<{onClose: () => void}> = ({onClose}) => {
     const { dispatch } = useAppContext();
@@ -106,9 +143,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectChannel }) => {
                     <p className="text-text-secondary mt-2">Clique em "Novo Canal" para começar.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="space-y-4">
                     {state.channels.map(channel => (
-                        <ChannelCard key={channel.id} channel={channel} onSelect={() => onSelectChannel(channel.id)} />
+                        <ExpandableChannelRow key={channel.id} channel={channel} onSelectChannel={onSelectChannel} />
                     ))}
                 </div>
             )}
@@ -118,4 +155,3 @@ const Dashboard: React.FC<DashboardProps> = ({ onSelectChannel }) => {
 };
 
 export default Dashboard;
-   
