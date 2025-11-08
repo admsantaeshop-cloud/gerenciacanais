@@ -1,0 +1,5 @@
+{
+  "name": "Gerenciador de Produção de Vídeos para YouTube",
+  "description": "Um sistema para gerenciar a produção de vídeos para múltiplos canais do YouTube, com foco em organização de projetos e portabilidade de arquivos.",
+  "requestFramePermissions": []
+}

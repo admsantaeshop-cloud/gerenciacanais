@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gerenciador de Produção de Vídeos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              'background': '#1a1a1a',
+              'surface': '#2a2a2a',
+              'primary': '#3b82f6',
+              'primary-hover': '#2563eb',
+              'secondary': '#4f4f4f',
+              'text-primary': '#e0e0e0',
+              'text-secondary': '#a0a0a0',
+              'border': '#3f3f3f',
+              'success': '#22c55e',
+              'warning': '#facc15',
+              'danger': '#ef4444',
+            },
+          },
+        },
+      };
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/"
+  }
+}
+</script>
+</head>
+  <body class="bg-background text-text-primary">
+    <div id="root"></div>
+  </body>
+</html>
+   
